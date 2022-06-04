@@ -1,0 +1,3 @@
+  59 "Backpacking"
+  25 "Carcamping"
+   6 "Mountaineering"

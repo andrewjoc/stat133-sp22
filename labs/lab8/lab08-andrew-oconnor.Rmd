@@ -1,0 +1,487 @@
+---
+title: "Lab 8: Functions and Conditionals"
+subtitle: "Stat 133, Spring 2022"
+output: 
+  html_document:
+    toc: true
+---
+
+> ### Learning Objectives
+>
+> - Learn how to write simple functions
+> - Get into the habit of writing simple functions
+> - Get into the habit of documenting functions
+> - Use conditionals if-then-else
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+```
+
+### General Instructions
+
+- Write your descriptions, explanations, and code in an `Rmd` (R markdown) file.
+- Name this file as `lab08-first-last.Rmd`, where `first` and `last` are your
+first and last names (e.g. `lab08-gaston-sanchez.Rmd`).
+- Knit your `Rmd` file as an html document (default option).
+- Submit your `Rmd` and `html` files to bCourses, in the corresponding lab assignment.
+
+
+
+## 1) Introduction
+
+In this lab you will practice writing simple functions, and some basic examples
+to make sure that the functions work as expected. Later in the course we will
+see how to write assertions (i.e. tests) for your functions in a more formal 
+way. 
+
+In addition to writing the functions, you should also practice documenting your 
+functions. Writing this type of documentation should become second nature.
+To do this, include roxygen comments such as:
+
+- `#' @title Name of your function`
+- `#' @description What the function does`
+- `#' @param x input(s) of your function`
+- `#' @return output of your function`
+
+
+-----
+
+
+## 2) Polynomials
+
+In this problem we want to see whether the graph of a given polynomial
+will cross or touch the _x_ axis in a given interval. 
+
+Let's begin with the polynomial: 
+
+$$
+f(x) = x^2 - 1
+$$
+
+The first thing to do is to write a function for the polynomial, for instance:
+
+```{r}
+#' @title polynomial function x^2-1
+#' @description returns the value of the polynomial at a specified x value
+#' @param x value of x (numeric)
+#' @return computed output
+
+poly1 <- function(x) {
+  x^2 - 1
+}
+```
+
+Once you have a function for the polynomial, you can create a set of pairs of
+points $x$ and $y = f(x)$, and then use them to graph the polynomial
+
+```{r polynomial_plot, out.width='60%', fig.align='center'}
+# set of points
+x <- seq(-4, 4, length.out = 50)
+y <- poly1(x)
+
+# graph polynomial
+plot(x, y, type = 'l', lwd = 3, col = "#FB7215", las = 1)
+abline(h = 0, v = 0, col = '#888888aa', lwd = 1.5)
+title(main = expression(paste(f(x), ' = ', x^2, (x - 1))))
+```
+
+
+-----
+
+
+### 2.1) Your Turn: Polynomial functions
+
+Write functions and graph the following polynomials in the x-axis interval
+-4 to 4:
+
+a. $f(x) = x^3$
+
+```{r}
+#' @title polynomial function x^3
+#' @description returns the value of the polynomial at a specified x value
+#' @param x value of x (numeric)
+#' @return computed output
+
+cubic <- function(x) {
+  x^3
+}
+
+# set of points
+x <- seq(-4, 4, length.out = 50)
+y <- cubic(x)
+
+# graph polynomial
+plot(x, y, type = 'l', lwd = 3, col = "#FB7215", las = 1)
+abline(h = 0, v = 0, col = '#888888aa', lwd = 1.5)
+title(main = expression(paste(f(x), ' = ', x^3)))
+```
+
+b. $f(x) = (x^2 - 1)(x + 3)^3$
+
+```{r}
+#' @title polynomial function (x^2-1)(x+3)^3
+#' @description returns the value of the polynomial at a specified x value
+#' @param x value of x (numeric)
+#' @return computed output 
+
+polyb <- function(x) {
+  (x^2-1) * (x+3)^3
+}
+
+# set of points
+x <- seq(-4, 4, length.out = 50)
+y <- polyb(x)
+
+# graph polynomial
+plot(x, y, type = 'l', lwd = 3, col = "#FB7215", las = 1)
+abline(h = 0, v = 0, col = '#888888aa', lwd = 1.5)
+title(main = expression(paste(f(x), ' = ', (x^2-1), (x+3)^3)))
+```
+
+c. $f(x) = (x^2 - 1)(x^2 - 9)$
+
+```{r}
+#' @title polynomial function (x^2-1)(x^2-9)
+#' @description returns the value of the polynomial at a specified x value
+#' @param x value of x (numeric)
+#' @return computed output
+
+polyc <- function(x) {
+  (x^2-1) * (x^2-9)
+}
+
+# set of points
+x <- seq(-4, 4, length.out = 50)
+y <- polyc(x)
+
+# graph polynomial
+plot(x, y, type = 'l', lwd = 3, col = "#FB7215", las = 1)
+abline(h = 0, v = 0, col = '#888888aa', lwd = 1.5)
+title(main = expression(paste(f(x), ' = ', (x^2-1), (x^2-9))))
+```
+
+
+-----
+
+
+## 3) Area of a circle
+
+Consider a circle with `radius = 2`. The area of this circle can be computed
+in R as:
+
+```{r}
+# area of circle with radius 2
+r <- 2
+area <- pi * r^2
+area
+```
+
+
+### 3.1) Your Turn: `circle_area()` version 1
+
+Write a function `circle_area()` that calculates the area of a circle. This 
+function must take one argument `radius`. Give `radius` a default value of 1.
+Don't forget to include roxygen comments to document your function!
+
+```{r}
+#' @title area of a circle
+#' @description returns the value of a circle with radius x having a default radius of 1
+#' @param x radius of the circle (numeric)
+#' @return computed area
+
+circle_area <- function(radius = 1) {
+  pi * radius^2
+}
+```
+
+Test your function with:
+
+- `circle_area()`
+
+- `circle_area(radius = 3)`
+
+```{r}
+circle_area()
+circle_area(radius = 3)
+```
+
+
+### 3.2) Your Turn: `circle_area()` version 2
+
+Modify your `circle_area()` function in order to include a `stop()` statement.
+If `radius` is negative, then the function should stop with a message like:
+`"radius cannot be negative"`.
+
+```{r}
+#' @title area of a circle
+#' @description returns the value of a circle with radius x with a default radius of 1
+#' @param x radius of the circle (numeric)
+#' @return computed area
+
+circle_area <- function(radius = 1) {
+  if (radius < 0) {
+    stop("radius cannot be negative")
+  }
+  pi * radius^2
+}
+```
+
+Test your modified `circle_area()` with `radius = -2`; the function should 
+return a stop message:
+
+```{r}
+circle_area(radius = -2)
+```
+
+
+-----
+
+
+## 4) Area of a Cylinder
+
+For a given cylinder of radius $r$ and height $h$ the surface area $A$ is given 
+by:
+
+$$
+\text{area} = 2 \pi r h + 2 \pi r^2
+$$
+
+
+For example. Say you have a cylinder with radius = 2, and height = 3.
+
+```{r}
+# cylinder variables
+r = 2  # radius
+h = 3  # height
+
+# area of cylinder
+(2 * pi * r * h) + (2 * pi * r^2)
+```
+
+Notice that the formula of the area of a cylinder includes the area of a 
+circle: $\pi r^2$. 
+
+
+### 4.1) Your Turn: `cylinder_area()` function
+
+Write a function `cylinder_area()`, that calls `circle_area()`, 
+to compute the area of a cylinder. 
+
+```{r}
+#' @title area of a cylinder
+#' @description returns the area of a cylinder with varying radius and height
+#' @param radius radius of the cylinder (numeric)
+#' @param height height of the cylinder (numeric) 
+#' @return computed area
+
+cylinder_area <- function(radius = 1, height = 1) {
+  if (radius < 0) {
+    stop("radius cannot be negative")
+  }
+  if (height < 0) {
+    stop("height cannot be negative")
+  }
+  (2 * pi * radius * height) + (2 * pi * radius^2)
+}
+```
+
+This function must take two arguments: `radius` and `height`. Give both 
+arguments a default value of 1. In addition, the function should stop if any
+of `radius` or `height` are negative.
+
+Test your function with:
+
+- `cylinder_area()`
+
+- `cylinder_area(radius = 2, height = 3)`
+
+- `cylinder_area(radius = -2, height = 1)`
+
+- `cylinder_area(radius = 2, height = -1)`
+
+- `cylinder_area(radius = -2, height = -1)`
+
+```{r}
+cylinder_area()
+cylinder_area(radius = 2, height = 3)
+cylinder_area(radius = -2, height = 1)
+cylinder_area(radius = 2, height = -1)
+cylinder_area(radius = -2, height = -1)
+```
+
+
+-----
+
+
+## 5) Even and Odd Numbers
+
+Any number that can be exactly divided by 2 is called as an __even__ number. 
+R provides the modulo operator, `"%%"` that can be used to determine if a 
+number is even or odd.
+
+To be more precise, the modulo operator returns the remainder or signed 
+remainder of a division.
+
+For example, `4 %% 2` evaluates to 0, because 4 divided by 2 has a quotient of 
+2 and a remainder of 0:
+
+```{r}
+# 4 is exactly divisible by 2
+4 %% 2
+```
+
+In contrast, `5 %% 2` would evaluate to 1, because 5 divided by 2 has a 
+quotient of 2 and a remainder of 1
+
+```{r}
+# 5 is not exactly divisible by 2
+5 %% 2
+```
+
+
+### 5.1) Your Turn: Even number
+
+Write a function `is_even()` that determines whether a number is even 
+(i.e. multiple of 2). If the input number is even, the output should be 
+`TRUE`. If the input number is odd, the output should be `FALSE`. 
+If the input is not a number, the output should be `NA` 
+
+```{r}
+#' @title even number
+#' @description returns TRUE if the input is even, FALSE if it is odd, or NA if the input is not numeric
+#' @param x input to be tested (numeric)
+#' @return boolean corresponding to the description
+
+is_even <- function(x) {
+  if (is.numeric(x) == FALSE) {
+    return('NA')
+  }
+  if (x %% 2 == 0) {
+    return(TRUE)
+  }
+  if (x %% 2 == 1) {
+    return(FALSE)
+  }
+}
+```
+
+Test your function with:
+
+- `is_even(10)`
+
+- `is_even(33)`
+
+- `is_even('a')`
+
+```{r}
+is_even(10)
+is_even(33)
+is_even('a')
+```
+
+
+### 5.2) Your Turn: Odd number
+
+Use your function `is_even()` to write a function `is_odd()` that determines 
+if a number is odd (i.e. not a multiple of 2). If a number is odd, the output 
+should be `TRUE`; if a number is even the output should be `FALSE`; if the 
+input is not a number the output should be `NA`
+
+```{r}
+#' @title odd number
+#' @description returns TRUE if the input is odd, FALSE if it is even, or NA if the input is not numeric
+#' @param x input to be tested (numeric)
+#' @return boolean or NA corresponding to the description
+
+is_odd <- function(x) {
+  if (is.numeric(x) == FALSE) {
+    return('NA')
+  }
+  if (x %% 2 == 0) {
+    return(FALSE)
+  }
+  if (x %% 2 == 1) {
+    return(TRUE)
+  }
+}
+```
+
+Test `is_odd()` with the following cases:
+
+- `is_odd(1)`
+
+- `is_odd(4)`
+
+- `is_odd('a')`
+
+```{r}
+is_odd(1)
+is_odd(4)
+is_odd('a')
+```
+
+
+-----
+
+
+## 6) If Conditionals
+
+Say you have a number $x$, and you want to compute another number $y$ that 
+takes a value depending on $x$ as follows:
+
+$$
+y = \begin{cases}
+0 & \text{if} & x < 0 \\
+& \\
+x & \text{if} & x \in [0, 100] \\
+& \\
+100 & \text{if} & x > 100
+\end{cases}
+$$
+
+
+### 6.1) Your Turn: `squish()` function
+
+Write a function `squish()` that "squishes" a number into the interval 
+$[0, 100]$, so that a number less than 0 is replaced by 0 and a number greater 
+than 100 is replaced by 100.
+
+```{r}
+#' @title squish
+#' @description returns the value of a number if in the range 0 to 100. If not, it returns 0 or 100 depending on which value is closest
+#' @param x input that will be squished (numeric)
+#' @return value within the range 0 to 100
+
+squish <- function(x) {
+  if (x < 0) {
+    return(0)
+  }
+  if (x > 100) {
+    return(100)
+  }
+  else {
+    return(x)
+  }
+}
+```
+
+Test `squish()` with:
+
+- `squish(-5)`
+
+- `squish(180)`
+
+- `squish(50)`
+
+- `squish(0)`
+
+- `squish(100)`
+
+```{r}
+squish(-5)
+squish(180)
+squish(50)
+squish(0)
+squish(100)
+```
+

@@ -1,0 +1,174 @@
+---
+title: "Lab 5: Basics of Unix and CLI"
+subtitle: "Stat 133, Spring 2022"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+> ### Learning Objectives
+>
+> - Practicing with the command line
+> - Navigating the filesystem and managing files
+> - Practice basic manipulation of data files
+
+
+### General Instructions
+
+- Write your bash commands in a text file (`lab05-gaston-sanchez.txt`)
+- Submit your `txt` file to bCourses, in the corresponding lab assignment.
+
+
+
+## 1) Basic Bash shell commands
+
+The first part of the lab involves navigating the file system and manipulating
+files (and directories) with the following basic bash commands:
+
+- `pwd`: print working directory
+- `ls`: list files and directories
+- `cd`: change directory (move to another directory)
+- `mkdir`: create a new directory
+- `touch`: create a new (empty) file
+- `cp`: copy file(s)
+- `mv`: rename file(s)
+- `rm`: delete file(s)
+
+#### Cheatsheet and Online Man Pages
+
+While you work on this part of the lab, you may want to open this cheatsheet:
+
+- [command line cheatsheet](https://github.com/ucb-stat133/stat133-cheatsheets/blob/master/command-line-cheatsheet.pdf)
+
+__Windows users:__ If you are using __git-bash__ (i.e. your OS is Windows) you don't have the `man` 
+command to see the manual documentation of other commands. In this case you can 
+check the _man_ pages online:
+
+[http://man7.org/linux/man-pages/index.html](http://man7.org/linux/man-pages/index.html)
+
+
+## 2) Lab Directory
+
+Write your bash commands in a text editor (NOT a word processor) and save them 
+in a text file: e.g. `lab05-gaston-sanchez.txt`.
+
+- Open (or launch) the command line. If you use Windows, open GitBash.
+
+- Use the command `pwd` to see what's your current directory
+
+- Use `mkdir` to create a new directory `stat133-lab05`
+
+- Change directory to `stat133-lab05`
+
+- Use the command `curl` to download the following text file:
+```bash
+# the option is the letter O (Not the number 0)
+curl -O http://textfiles.com/food/bread.txt
+```
+
+- Use the command `ls` to list the contents in your current directory
+
+- Use the command `curl` to download these other text files:
+	- http://textfiles.com/food/btaco.txt
+	- http://textfiles.com/food/1st_aid.txt
+	- http://textfiles.com/food/beesherb.txt
+	- http://textfiles.com/food/bakebred.txt
+
+- Use the command `curl` to download the following csv files:
+	- http://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv
+	- http://web.pdx.edu/~gerbing/data/cars.csv
+	- http://web.pdx.edu/~gerbing/data/color.csv
+	- http://web.pdx.edu/~gerbing/data/snow.csv
+	- http://web.pdx.edu/~gerbing/data/mid1.csv
+	- http://web.pdx.edu/~gerbing/data/mid2.csv
+	- http://web.pdx.edu/~gerbing/data/minutes1.csv
+	- http://web.pdx.edu/~gerbing/data/minutes2.csv
+
+
+### 2.1) Inspecting a Directory
+
+- Use the command `ls` to list the contents in your current directory
+
+- Now try `ls -l` to list the contents in your current directory in long format
+
+- Look at the `man` documentation of `ls` to find out how to list the contents in reverse order
+
+- How would you list the contents in long format arranged by time?
+
+- Find out how to use the wildcard `*` to list all the files with extension `.txt`
+
+- Use the wildcard `*` to list all the files with extension `.csv` in reverse order
+
+- You can use the character `?` to represent a single character: e.g. `ls mid?.csv`. Find out how to use the wilcard `?` to list `.csv` files with names made of 4 characters (e.g. `mid1.csv`, `snow.csv`)
+
+- The command `ls *[1]*.csv` should list `.csv` files with names containing the number 1 (e.g. `mid1.csv`, `minutes1.csv`). Adapt the command to list `.csv` files with names containing the number 2.
+
+- Find out how to list files with names containing any number.
+
+- Invoke the command `history` and see what happens.
+
+
+### 2.2) Moving Files
+
+- Inside `stat133-lab05` create a directory `data`
+
+- Change directory to `data`
+
+- Create a directory `txt-files`
+
+- Create a directory `csv-files`
+
+- Use the command `mv` to move the `bread.txt` file to the folder `txt-files`. Without changing directories, use `ls` to confirm that
+`bread.txt` is now inside `txt-files`.
+
+- Use the wildcard `*` to move all the `.txt` files to the directory `txt-files`. Without changing directories, use `ls` to confirm that
+all the `.txt` files are inside `txt-files`.
+
+- Use the wildcard `*` to move all the `.csv` files to the directory `csv-files`. Without changing directories, use `ls` to confirm that
+all the `.csv` files are inside `csv-files`.
+
+
+### 2.3) Copying Files
+
+- Go back to the parent directory `stat133-lab05`
+
+- Create a directory `copies`
+
+- Use the command `cp` to copy the `bread.txt` file (the one inside the folder `txt-files`) to the `copies` directory
+
+- Without changing directories, use `ls` to confirm that
+`bread.txt` is now inside `copies`.
+
+- Use the wildcard `*` to copy all the `.txt` files in the directory `copies`
+
+- Without changing directories, use `ls` to confirm that all the 
+`.txt` files are now inside `copies`.
+
+- Use the wildcard `*` to copy all the `.csv` files in the directory `copies`
+
+
+
+### 2.4) Renaming and Deleting Files
+
+- Change to the directory `copies`
+
+- Use the command `mv` to rename the file `bread.txt` as `bread-recipe.txt`
+
+- Rename the file `cars.csv` as `autos.csv`
+
+- Rename the file `btaco.txt` as `breakfast-taco.txt`
+
+- Change to the parent directory (i.e. `stat133-lab05`)
+
+- Rename the directory `copies` as `copy-files`
+
+- Find out how to use the `rm` command to delete the `.csv` files that are in `copy-files`
+
+- Find out how to use the `rm` command to delete the directory `copy-files`
+
+- List the contents of the directory `txt-files` displaying the results in reverse (alphabetical) order
+

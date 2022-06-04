@@ -1,0 +1,192 @@
+---
+title: "andrew-oconnor-project1"
+output: html_document
+---
+
+# A) Data IBTrACS
+
+### A.1) Recommended R Packages
+
+```{r}
+library(tidyverse)
+library(lubridate)
+install.packages("spData", repos = "http://cran.us.r-project.org")
+install.packages("gganimate", repos = "http://cran.us.r-project.org")
+library(gganimate)
+```
+
+### A.2) Importing Data in R
+
+```{r}
+column_names <- c('SID', 'SEASON', 'NUMBER', 'BASIN', 'SUBBASIN', 'NAME', 'ISO_TIME', 'NATURE', 'LAT', 'LON', 'WMO_WIND', 'WMO_PRES', 'WMO_AGENCY', 'TRACK_TYPE', 'DIST2LAND', 'LANDFALL')
+
+column_types <- c('character', 'integer', 'integer', 'character', 'character', 'character', 'character', 'character', 'double', 'double', 'integer', 'integer', 'character', 'character', 'integer', 'integer')
+
+ibtracs_v04 <- read.csv(
+  file = 'ibtracs.NA.list.v04r00.csv',
+  colClasses = c(column_types, rep("NULL", 147)),
+  stringsAsFactors = FALSE,
+  skip = 77876,
+  na.strings = ''
+)
+
+colnames(ibtracs_v04) <- column_names
+```
+
+### A.3) Adding a `MONTH` Column
+
+```{r}
+ibtracs_v04$iISO_TIME = as.POSIXct(ibtracs_v04$ISO_TIME)
+ibtracs_v04$MONTH <- lubridate::month(ibtracs_v04$ISO_TIME)
+
+str(ibtracs_v04, vec.len = 1)
+```
+
+# C) Main Analysis
+
+## C.1) Atlantic Hurricane Season    
+Consider the following claims listed below (C1.a - C1.f). For each claim, write R code that provides output that allows you to directly address each claim, determining which parts are true or false. In addition to your R code, include a sound description and interpretation.    
+
+#### C1.a) The 2020 Atlantic hurricane season featured a total of 31 tropical cyclones, all but one of which became a named storm. As expected, none of the tropical cyclones formed pre-season    
+
+To inspect the claim that the 2020 Atlantic hurricane season featured 31 tropical cyclones with all names except one and that none of the hurricanes formed preseason, it is useful to use a dataframe to inspect the data. After the initial importing of the data to a dataframe designated `ibtracs_v04`, I inspected whether there were certainly 31 tropical cyclones in total during the year 2020. The code below takes the dataframe `ibtracs_v04` and uses the filter() function to only show cyclones that occurred in the year 2020. Now that I had the tropical cyclones in 2020, I initially selected columns that may have importance in future filtering. I then used the group_by() and distinct() functions to determine the unique names of storms that occurred in 2020.
+
+```{r}
+ibtracs_v04 %>%
+  filter(SEASON == 2020) %>%
+  select(SEASON, NAME, ISO_TIME, MONTH) %>%
+  group_by(NAME) %>%
+  distinct(NAME)
+```
+
+As determined by the code, the resulting dataframe is 31x1, showing that there is, indeed, a total of 31 storms. Looking at this dataframe also shows that there also is a row for unnamed storms. This validates the first part of the claim. Now that this part of the claim is verified, I wanted to find if there were any storms that formed preseason. According to the NOAA, the Atlantic hurricane season officially runs from June 1st to November 30th. Therefore, I found that I could find the answer by modifying the previous dataframe to, instead, filter where the month was less than 6 (due to the fact that month 6 represents June). `
+
+```{r}
+ibtracs_v04 %>%
+  filter(SEASON == 2020) %>%
+  select(SEASON, NAME, ISO_TIME, MONTH) %>%
+  filter(MONTH < 6) %>%
+  group_by(NAME, MONTH) %>%
+  distinct(MONTH)
+```
+
+After applying changes to the code above, I determined that there are, in fact, two tropical cyclones that formed in the 5th month, which is May. These storms are tropical cyclones Arthur and Bertha. This revelation makes clear to myself that the second part of the claim is not true. There exists tropical cyclones that formed before the official start of the 2020 Atlantic hurricane season.
+
+#### C1.b) Of the named storms in the 2020 Atlantic hurricane season, seven of the hurricanes intensified into major hurricanes although none of them reached Category 5 status.   
+
+Approaching this claim, I noted that there are two important aspects I needed to implement in code to determine whether or not the statement was true. The first was that the storms occurring in 2020 needed to be named. The second part was understanding the difference between “major” hurricanes and “Category 5” hurricanes. According to the NOAA, major hurricanes are characterized by wind speeds of 96 knots or greater while category 5 hurricanes are characterized by wind speeds greater than 137 knots. Since there are multiple rows for a singular hurricane, I utilized the summarise() function in order to generate a dataframe that found the maximum wind speed reached by a storm. From here, I filtered the dataframe to show tropical cyclones that had wind speeds greater than or equal to 96 knots. 
+
+```{r}
+ibtracs2020_wind <- ibtracs_v04 %>%
+  filter(SEASON == 2020 & WMO_WIND > 0) %>%
+  select(SEASON, NAME, WMO_WIND, MONTH) %>%
+  group_by(NAME) %>%
+  summarise(max_wind = max(WMO_WIND)) %>%
+  filter(max_wind >= 96)
+
+ibtracs2020_wind
+```
+
+#### C1.c) The 2010 Atlantic hurricane season had 19 named storms. Despite this above average activity, not one hurricane hit the United States.
+
+To examine whether or not a hurricane reached the United States, I found that it was very useful to use the latitude and longitude data to generate a visualization over a map. To do this, I first created the dataframe `ibtracs_2010` to contain relevant data about cyclones in 2010, which include name, latitude, longitude and wind speed. I then generated a static plot of the hurricane paths over a map, with my main resource being the textbook provided by Professor Sanchez. 
+
+```{r}
+world_map <- map_data("world")
+
+ibtracs_2010 <- ibtracs_v04 %>%
+  filter(SEASON == 2010) %>%
+  select(NAME, LAT, LON, WMO_WIND) %>%
+  filter(NAME != "NOT_NAMED")
+
+gg_world <- ggplot() +
+  geom_polygon(data=world_map, 
+               aes(x=long, y=lat, group=group),
+               fill = "lightgray", colour = "gray", size = 0.4) + theme_bw()
+
+gg_world + 
+  geom_point(data=ibtracs_2010, aes(LON, LAT, color=NAME)) + xlim(c(-150,0)) + ylim(c(0,90))
+```
+
+From here, I visually saw that, although many hurricanes do not make direct landfall on the United States, a small number of paths cross onto the United States. This invalidates the claim that not one hurricane hit the United States. 
+
+#### C1.d) The 2005 Atlantic hurricane season featured a total of 27 named storms, seven of which became major hurricanes, making this the season with the most number of major hurricanes during the period 1970-2020.    
+
+Approaching the claim, I decided to first create a dataframe that contained relevant information for analysis. I first filtered the original dataframe to get the storms that occurred in the year 2005. Then, similar to my process in C.1d, I utilized the summarise() function in order to generate a dataframe that displayed the maximum wind speed reached by a storm. This step mainly helped me visualize, for the next step, how I would find a count of the number of cyclones that occurred in a certain year.
+
+```{r}
+ibtracs_2005 <- ibtracs_v04 %>%
+  filter(SEASON == 2005 & WMO_WIND > 0) %>%
+  select(SEASON, NAME, WMO_WIND, MONTH) %>%
+  group_by(NAME, SEASON) %>%
+  summarise(max_wind = max(WMO_WIND))
+# this code will show us the cyclones in 2005 that are major hurricanes: ibtracs_2005 %>% filter(max_wind >= 96)
+
+ibtracs_2005
+```
+
+```{r}
+ibtracs_majorhurricanes <- ibtracs_v04 %>%
+  select(SEASON, NAME, WMO_WIND, MONTH) %>%
+  filter(WMO_WIND > 0 & WMO_WIND >= 96) %>%
+  group_by(NAME, SEASON) %>%
+  summarise(max_wind = max(WMO_WIND)) %>%
+  arrange(SEASON) %>%
+  group_by(SEASON) %>%
+  count(SEASON)
+
+ibtracs_majorhurricanes
+```
+
+Now that I had a way to analyze data from 2005, I created another dataframe `ibtracs_majorhurricanes` which displayed the counts of cyclones from 1970 to 2020. Although I found that 7 was the maximum number of major hurricanes in a year, there are two years where 7 major hurricanes formed. These two years, which I found through looking at the resulting dataframe, were 2005 and 2020. The fact that these two years both had the same number of major hurricanes invalidates the claim that the 2005 Atlantic hurricane season had the most number of major hurricanes.
+
+#### C1.e) In the period from 1970 to 2020, the 2020 Atlantic hurricane season was the most active on record. By "active" we mean the season with the most tropical cyclones.
+
+To approach this claim, I figured that I needed a count of all the unique cyclones that occurred each year from 1970-2020. In this, I altered the code from part d by removing the filter where the maximum wind speed had to be greater than or equal to 96 knots. 
+
+```{r}
+cyclones_per_year <- ibtracs_v04 %>%
+  select(SEASON, NAME) %>%
+  distinct(SEASON, NAME) %>%
+  group_by(SEASON) %>%
+  count(SEASON)
+
+cyclones_per_year
+```
+
+In the code above, I found that 2020 experienced 31 unique cyclones which had outnumbered every year before. 
+
+#### C1.f) In the 2020 Atlantic hurricane season, 14 storms intensified into hurricanes, making this season the one with the most number of hurricanes during the period 1970 to 2020.
+
+For this claim, I approached it in a similar way as others. I essentially wanted a count of the unique cyclones that were classified as hurricanes. According to the NOAA, a hurricane is characterized by wind speeds of 64 knots or greater. To achieve this result, I utilized a similar method of filtering, grouping and eventually using the count() function to determine the validity of the claim.
+
+```{r}
+hurricanes_per_year <- ibtracs_v04 %>%
+  filter(WMO_WIND > 0) %>%
+  select(SEASON, NAME, WMO_WIND, MONTH) %>%
+  group_by(SEASON, NAME) %>%
+  summarise(max_wind = max(WMO_WIND)) %>%
+  filter(max_wind >= 64) %>%
+  count(SEASON)
+
+hurricanes_per_year
+
+# claim is true that 2020 yielded 14 hurricanes but the claim is false in that it was the season with the most number of hurricanes during the period 1970 to 2020. 2005 has the most number of hurricanes, with 15 total hurricanes. Note that this question general asks for hurricanes. Hurricanes are defined by wind speeds greater than or equal to 64 knots. Major hurricanes are greater than or equal to 96 knots. 
+```
+Overall, I found that the claim is true that the year 2020 yielded 14 hurricanes. However, I found that the claim was invalid in that it was the season with the most number of hurricanes during the period 1970-2020. In looking through the resulting dataframe, it appears that the 2005 season experienced the most number of hurricanes as there are 15 recorded. Therefore, the claim does not hold true for all parts it mentions.
+
+## C.2) Animated Map
+
+```{r}
+ibtracs_2020 <- ibtracs_v04 %>%
+  filter(SEASON == 2020) %>%
+  select(NAME, SEASON, ISO_TIME, LAT, LON, WMO_WIND, MONTH) %>%
+  mutate(DAY = day(ISO_TIME))
+
+head(ibtracs_2020)
+```
+
+```{r}
+gg_world + geom_point(data=ibtracs_2020, aes(LON, LAT, color=NAME)) + xlim(c(-150,0)) + ylim(c(0,90)) + transition_time(DAY)
+```
+

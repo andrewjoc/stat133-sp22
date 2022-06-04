@@ -1,0 +1,56 @@
+pwd
+mkdir stat133-lab05
+cd stat133-lab05
+curl -O http://textfiles.com/food/bread.txt
+ls
+curl -O http://textfiles.com/food/btaco.txt
+curl -O http://textfiles.com/food/1st_aid.txt
+curl -O http://textfiles.com/food/beesherb.txt
+curl -O http://textfiles.com/food/bakebred.txt
+curl -O http://archive.ics.uci.edu/ml/machine-learning-databases/forest-fires/forestfires.csv
+curl -O http://web.pdx.edu/~gerbing/data/cars.csv
+curl -O http://web.pdx.edu/~gerbing/data/color.csv
+curl -O http://web.pdx.edu/~gerbing/data/snow.csv
+curl -O http://web.pdx.edu/~gerbing/data/mid1.csv
+curl -O http://web.pdx.edu/~gerbing/data/mid2.csv
+curl -O http://web.pdx.edu/~gerbing/data/minutes1.csv
+curl -O http://web.pdx.edu/~gerbing/data/minutes2.csv
+
+ls
+ls -l
+ls -r
+ls -tl
+ls *.txt
+ls -r *.csv
+ls mid?.csv
+ls *[2]*.csv
+ls *[0-9]*.csv
+history
+
+mkdir data
+cd data
+mkdir txt-files
+mkdir csv-files
+mv ../bread.txt txt-files\
+mv ../*.txt txt-files\
+mv ../*.csv csv-files\
+
+cd .. ..
+mkdir copies
+cp data\txt-files\bread.txt copies\
+ls -l copies\
+cp data\txt-files\*.txt copies\
+cp data\csv-files\*.csv copies\
+
+cd copies
+mv bread.txt bread-recipes.txt
+mv cars.csv autos.csv
+mv btaco.txt breakfast-taco.txt
+cd ..
+mv copies\ copy-files\
+rm copy-files/*.csv 
+rm -r copy-files\
+ls -r data\txt-files\
+
+
+

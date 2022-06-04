@@ -1,0 +1,14 @@
+name: project-3-andrew-oconnor
+title: project-3-andrew-oconnor
+username:
+account: yyvyst-andrew-o0connor
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6201646
+bundleId: 5852188
+url: https://yyvyst-andrew-o0connor.shinyapps.io/project-3-andrew-oconnor/
+when: 1651254825.68993
+lastSyncTime: 1651254825.68995
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: andrew_oconnor_project3.html|andrew_oconnor_project3.Rmd|app-template.R|project3.pdf

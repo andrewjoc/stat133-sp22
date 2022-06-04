@@ -1,0 +1,86 @@
+---
+title: 'Project 3: "State of the Union" Text Analysis'
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(tidytext)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+library(igraph)
+library(ggraph)
+library(shiny)
+library(quanteda)
+library(readtext)
+```
+
+```{r}
+sotu <- read.csv('state-union-2001-2022.csv')
+sotu
+```
+
+```{r}
+sotu_corpus <- corpus(sotu %>% 
+                        filter(president == "Barack Obama") %>%
+                        pull(message))
+sotu_toks <- tokens(sotu_corpus, remove_punct = TRUE)
+sotu_dfm <- dfm(sotu_toks)
+
+sotu_dfm
+```
+
+```{r}
+sotu_td <- tidy(sotu_dfm)
+sotu_td
+```
+
+```{r}
+sotu_td_idf <- sotu_td %>%
+  bind_tf_idf(term, document, count) %>%
+  arrange(desc(tf_idf))
+
+sotu_td_idf
+```
+
+```{r}
+sotu_bypres <- sotu %>% filter(president == "George W. Bush") %>% pull(message)
+
+sotu_corpus <- corpus(sotu_bypres)
+
+sotu_toks <- tokens(sotu_corpus, remove_punct = TRUE)
+  
+sotu_dfm <- dfm(sotu_toks)
+  
+sotu_wt_td <- tidy(sotu_dfm)
+
+sotu_wt_idf <- sotu_wt_td %>%
+      bind_tf_idf(term, document, count) %>%
+      arrange(desc(tf_idf))
+
+sotu_wt_idf <- sotu_wt_idf %>% slice(1:10)
+
+sotu_wt_idf
+```
+
+```{r}
+# tokenization
+sotu_bypres <- sotu %>%
+  filter(president == "George W. Bush") %>%
+  group_by(message, year)
+  
+tidy_sotu <- unnest_tokens(sotu_bypres, word, message)
+  
+sotu_freqs <- tidy_sotu %>%
+  count(word)
+
+sotu_freqs
+
+top20_freqs = sotu_freqs %>%
+  arrange(desc(n)) %>%
+  slice_head(n = 20)
+
+top20_freqs
+```
+

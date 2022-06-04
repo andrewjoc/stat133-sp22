@@ -1,0 +1,27 @@
+cut -f 1 -d "," tents.csv | tail +2 | head -n 5 | sort -r
+cut -f 1 -d "," tents.csv | tail -n 5
+cut -f 1-2 -d "," tents.csv | tail +2 | head -n 5 
+cut -f 1,6,8 -d "," tents.csv | tail -n 5
+
+cut -f 6 -d "," tents.csv | tail +2 | sort | uniq -c | sort
+cut -f 7 -d "," tents.csv | tail +2 | sort | uniq
+cut -f 7 -d "," tents.csv | tail +2 | sort | uniq -c
+cut -f 6,7 -d "," tents.csv | tail +2 | sort | uniq -c
+
+grep "rei" tents.csv | wc -l
+grep "Backpacking" tents.csv | wc -l
+grep "big-agnes" tents.csv >> big-agnes.csv
+head -n 1 tents.csv > kelty-tents.csv
+grep "kelty" tents.csv | sort >> kelty-tents.csv
+
+cut -f 6 -d "," tents.csv | tail +2 | sort | uniq
+cut -f 6 -d "," tents.csv | tail +2 | sort | uniq -c > bestuse-counts.txt
+head -n 1 tents.csv > msr-tents.csv
+grep "msr" tents.csv >> msr-tents.csv
+cut -f 1 -d "," msr-tents.csv > name.txt
+cut -f 4 -d "," msr-tents.csv > weight.txt
+cut -f 3 -d "," msr-tents.csv > price.txt
+paste price.txt weight.txt name.txt price.txt -d "," > msr-prices.csv
+sort -r msr-prices.csv | head -n 5
+head -n 1 msr-prices.csv > top10-tents.csv
+sort -r msr-prices.csv | head -n 10 > top10-tents.csv
